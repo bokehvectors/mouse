@@ -1,0 +1,71 @@
+   var y=350;
+   var x=35;
+   var worldSpeed=-1.5;
+   var jumpForce = -25.5;
+   var collissions = [];
+   var mouseHeight = 100;
+   var mouseWidth = 50;
+   var collissionMapHtml= document.getElementById("collissionMap");
+   var cheesesHtml = document.getElementById("cheeses");
+  
+   function jump(){
+     if(vy==0){
+      vy= jumpForce;
+     }
+   }
+   
+   function collission(){
+       var i= 0;
+       var collissioned = false;
+       collissions = []
+       collissionMap=collissionMapHtml.childNodes;
+       for(var i=1; i<collissionMap.length; i=i+1){
+         if(collissionMap[i].hasOwnProperty("x")){
+           var positionY = collissionMap[i].getAttribute("y")
+           var positionXb = collissionMap[i].getAttribute("x")
+           var positionXe = eval(positionXb) + eval(collissionMap[i].getAttribute("width"))
+           if(positionY <y+mouseHeight && positionY > y && vy>0 && x+mouseWidth>positionXb && x<positionXe-mouseWidth){
+               y=positionY-mouseHeight;
+               vy=0;
+           }
+         }
+       }
+   }
+
+   function moveWorld(){
+       collissionMap=collissionMapHtml.childNodes;
+       for(var i=3; i<collissionMap.length; i=i+1){
+         if(collissionMap[i].hasOwnProperty("x")){
+             collissionMap[i].setAttribute("x", eval(collissionMap[i].getAttribute("x"))+worldSpeed);
+             if (eval(collissionMap[i].getAttribute("x"))+eval(collissionMap[i].getAttribute("width"))<0){
+               var node = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+               node.setAttribute("x", 800);
+               node.setAttribute("y", 300);
+               node.setAttribute("width", 150);
+               node.setAttribute("height", 10);
+               node.style.opacity=0.5;
+               collissionMapHtml.appendChild(node);
+               collissionMapHtml.removeChild(collissionMap[i]);
+               var cheese = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
+               cheese.setAttribute("cx", 150/2+800);
+               cheese.setAttribute("r", 10)
+               cheese.setAttribute("cy", 300-10);
+               cheese.style.fill="yellow";
+               cheesesHtml.appendChild(cheese);
+             }
+         }
+       }
+       cheeses=cheesesHtml.childNodes;
+       for (var i=0; i<cheeses.length; i=i+1){
+           if(cheeses[i].hasOwnProperty("cx")){
+              cheeses[i].setAttribute("cx", eval(cheeses[i].getAttribute("cx"))+worldSpeed);
+           }
+       }
+   }
+  
+function move(){
+   vy=vy+gravity;
+   y=y+vy;
+   moveWorld();
+   collission();
+}
